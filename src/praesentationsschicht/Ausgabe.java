@@ -1,16 +1,12 @@
+package praesentationsschicht;
+
+import datenhaltungsschicht.DBZugriff;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-public class View {
-    public static void main(String[] args) {
-
-    }
-    public static void executeAndPrint(String sqlString) {
-        System.out.println("\nErgebnis:");
-        Model.execute(sqlString);
-        System.out.println();
-    }
+public class Ausgabe {
 
     public static void printTableLine(int[] colWidths) {
         System.out.print("+");
@@ -40,8 +36,9 @@ public class View {
                 }
             }
 
+            System.out.println("\n\nErgebnis:");
             // Gibt Spaltenkopf aus
-            printTableLine(colWidths);
+            System.out.println();
             System.out.print("|");
             for (int i = 1; i <= colCount; i++) {
                 System.out.printf(" %-" + colWidths[i - 1] + "s |", metaData.getColumnName(i));
@@ -58,8 +55,9 @@ public class View {
                     System.out.printf(" %-" + colWidths[i - 1] + "s |", (value != null ? value : ""));
                 }
                 System.out.println();
+                printTableLine(colWidths);
             }
-            printTableLine(colWidths);
+            DBZugriff.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
