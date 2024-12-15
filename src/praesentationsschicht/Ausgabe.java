@@ -57,7 +57,6 @@ public class Ausgabe {
                 System.out.println();
                 printTableLine(colWidths);
             }
-            DBZugriff.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

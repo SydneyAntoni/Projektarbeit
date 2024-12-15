@@ -1,9 +1,8 @@
 package praesentationsschicht;
 
 import datenhaltungsschicht.Logger;
-import logikschicht.Controller;
-
-import java.sql.Date;
+import logikschicht.ControllerInsert;
+import logikschicht.ControllerSelect;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -57,40 +56,39 @@ public class Eingabe {
                 case 1 -> {
                     System.out.print("\nWählen sie einen Benutzernamen für die Abfrage aus:");
                     String benutzername = sc.next();
-                    Controller.executeQuery1(benutzername);
+                    ControllerSelect.executeQuery1(benutzername);
                 }
                 case 2 -> {
                     System.out.print("\nWählen sie einen Benutzernamen für die Abfrage aus:");
                     String benutzername = sc.next();
-                    Controller.executeQuery2(benutzername);
+                    ControllerSelect.executeQuery2(benutzername);
                 }
                 case 3 -> {
-                    System.out.print("\nWählen sie einen Werbepartner für die Abfrage aus:");
+                    System.out.print("\nWählen Sie einen Werbepartner für die Abfrage aus:");
                     String werbepartner = sc.next();
-                    System.out.print("\nWählen sie eine Kategorie für die Abfrage aus:");
+                    System.out.print("\nWählen Sie eine Kategorie für die Abfrage aus:");
                     String kategorie = sc.next();
-                    Controller.executeQuery3(werbepartner, kategorie);
+                    ControllerSelect.executeQuery3(werbepartner, kategorie);
                 }
-                case 4 -> Controller.executeQuery4();
+                case 4 -> ControllerSelect.executeQuery4();
                 case 5 -> {
-                    System.out.print("\nWählen sie ein Datum für die Abfrage aus:");
+                    System.out.print("\nWählen Sie ein Datum für die Abfrage aus:");
                     String datum = sc.next();
-                    Controller.executeQuery5(Date.valueOf(datum));
+                    ControllerSelect.executeQuery5(datum);
                 }
                 default ->
                         System.out.println("\nIhre Eingabe ist fehlerhaft bitte wählen Sie eine Ziffer zwischen 1 und 5\n");
             }
 
-            System.out.println("\nWollen sie eine weitere DB-Anfrage auswählen? (j/n)");
-            boolean fehlgeschlagen;
+            System.out.println("\nWollen Sie eine weitere DB-Anfrage auswählen? (j/n)");
+            System.out.print("Eingabe:");
+            boolean fehlgeschlagen = false;
             do {
                 String auswahl = sc.next();
                 if (auswahl.equals("n")) {
                     weiteren = false;
-                    fehlgeschlagen = false;
                     System.out.println("\n");
                 } else if (auswahl.equals("j")) {
-                    fehlgeschlagen = false;
                     System.out.println("\n");
                 } else {
                     System.out.println("Ihre Eingabe '" + auswahl + "' ist fehlerhaft bitte wählen Sie entweder 'j' oder 'n'");
@@ -107,7 +105,7 @@ public class Eingabe {
             System.out.println("""
                     Wollen Sie ein Tupel
                     1. In die Tabelle Kommentar einfügen
-                    2. In die Tabelle Konto einfügen
+                    2. In die Tabelle Abonniert einfügen
                     3. Zurück zur Auswahl
                     """);
             System.out.print("Eingabe:");
@@ -117,19 +115,26 @@ public class Eingabe {
                 case 1 -> {
                     boolean weiteren = true;
                     while (weiteren) {
+                        System.out.print("\nGeben Sie einen Nachricht an:");
+                        String inhalt = sc.next();
+                        System.out.print("\nFalls Sie einen Kommentar unterkommentieren wollen, geben sie bitte dessen ID an oder '0' falls nicht:");
+                        int elternKommentarID = sc.nextInt();
+                        System.out.print("\nGeben Sie die ID des zu kommentierenden Videos an:");
+                        int videoID = sc.nextInt();
+                        System.out.print("\nGeben Sie ihren Benutzernamen an:");
+                        String benutzernamen = sc.next();
+                        if (ControllerInsert.executeInsertKommentar(inhalt, elternKommentarID, videoID, benutzernamen)) {
+                            System.out.println("\nIhr Tupel wurde erfolgreich eingefügt");
+                        }
 
-                        Controller.executeInsert(" TODO ");
-
-                        System.out.println("\nWollen sie ein weiteres Tupel einfügen? (j/n)");
-                        boolean fehlgeschlagen;
+                        System.out.println("\nWollen Sie ein weiteres Tupel einfügen? (j/n)");
+                        boolean fehlgeschlagen = false;
                         do {
                             String auswahl = sc.next();
                             if (auswahl.equals("n")) {
                                 weiteren = false;
-                                fehlgeschlagen = false;
                                 System.out.println("\n");
                             } else if (auswahl.equals("j")) {
-                                fehlgeschlagen = false;
                                 System.out.println("\n");
                             } else {
                                 System.out.println("Ihre Eingabe '" + auswahl + "' ist fehlerhaft bitte wählen Sie entweder 'j' oder 'n'");
@@ -140,12 +145,34 @@ public class Eingabe {
                     }
                 }
                 case 2 -> {
-
+                    boolean weiteren = true;
+                    while (weiteren) {
+                        System.out.print("\nGeben Sie den Benutzernamen des Abonnenten an:");
+                        String abonnent = sc.next();
+                        System.out.print("\nGeben Sie den Benutzernamen des Abonnierten an:");
+                        String abonnierter = sc.next();
+                        if (ControllerInsert.executeInsertAbonniert(abonnent, abonnierter)) {
+                            System.out.println("\nIhr Tupel wurde erfolgreich eingefügt");
+                        }
+                        System.out.println("\nWollen Sie ein weiteres Tupel einfügen? (j/n)");
+                        boolean fehlgeschlagen = false;
+                        do {
+                            String auswahl = sc.next();
+                            if (auswahl.equals("n")) {
+                                weiteren = false;
+                                System.out.println("\n");
+                            } else if (auswahl.equals("j")) {
+                                System.out.println("\n");
+                            } else {
+                                System.out.println("Ihre Eingabe '" + auswahl + "' ist fehlerhaft bitte wählen Sie entweder 'j' oder 'n'");
+                                fehlgeschlagen = true;
+                            }
+                        }
+                        while (fehlgeschlagen);
+                    }
                 }
                 case 3 -> weiteresTupel = false;
-
-                default ->
-                        System.out.println("Ihre Eingabe '" + eingabeAktionTupel + "' ist fehlerhaft bitte wählen Sie eine Ziffer zwischen 1 und 3");
+                default -> System.out.println("Ihre Eingabe '" + eingabeAktionTupel + "' ist fehlerhaft bitte wählen Sie eine Ziffer zwischen 1 und 3");
             }
         }
     }

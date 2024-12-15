@@ -10,68 +10,50 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class Controller {
+public class ControllerSelect {
 //      Finde alle Benutzernamen der Konten, die das Konto mit dem Benutzernamen user123 abonniert haben.
     private static String sqlString1 =
-            "SELECT Benutzername " +
-            "FROM (Konto k JOIN Abonniert a ON k.Benutzername = a.AbonnentID) " +
+            "SELECT Benutzername\n" +
+            "FROM (Konto k JOIN Abonniert a ON k.Benutzername = a.AbonnentID)\n" +
             "WHERE a.abonniertid = ?";
 
 //      Finde alle Kommentare, Videos und Bewertungen, die das Konto mit dem Benutzernamen user123 verfasst, erstellt
 //      und bewertet hat. Finde auch alle Videos, die das Konto geschaut hat.
-    //TODO: Daten werden Doppelt ausgegeben
-    private static String sqlString2 ="SELECT " +
-        "    v.videoID AS erstellt_videoid," +
-        "    v.titel," +
-        "    k.kommentarid," +
-        "    k.inhalt," +
-        "    b.videoid AS bewertet_videoid," +
-        "    b.typ," +
-        "    v2.videoid AS geschaut_videoid," +
-        "    v2.titel AS geschaut_titel " +
-        "FROM (" +
-        "    (" +
-        "        video v " +
-        "        LEFT JOIN kommentar k ON v.benutzername = k.benutzername" +
-        "    ) " +
-        "    LEFT JOIN bewertet b ON k.benutzername = b.benutzername" +
-        ") " +
-        "LEFT JOIN (" +
-        "    geschaut g " +
-        "    INNER JOIN video v2 ON g.videoid = v2.videoid" +
-        ") ON b.benutzername = g.benutzername " +
-        "WHERE v.benutzername = ? " +
-        "UNION " +
-        "SELECT " +
-        "    v.videoID AS erstellt_videoid, " +
-        "    v.titel, " +
-        "    k.kommentarid, " +
-        "    k.inhalt, " +
-        "    b.videoid AS bewertet_videoid, " +
-        "    b.typ, " +
-        "    v2.videoid AS geschaut_videoid, " +
-        "    v2.titel AS geschaut_titel " +
-        "FROM (" +
-        "    (" +
-        "        kommentar k " +
-        "        RIGHT JOIN video v ON v.benutzername = k.benutzername" +
-        "    ) " +
-        "    RIGHT JOIN bewertet b ON k.benutzername = b.benutzername" +
-        ") " +
-        "RIGHT JOIN (" +
-        "    geschaut g " +
-        "    INNER JOIN video v2 ON g.videoid = v2.videoid" +
-        ") ON b.benutzername = g.benutzername " +
-        "WHERE v.benutzername = ?";
+    private static String sqlString2 ="SELECT 'Kommentar' AS Typ, k.KommentarID AS ID, v.Titel AS VideoTitel, " +
+        "    k.Inhalt AS KommentarInhalt, k.Verfassungsdatum " +
+        "FROM Kommentar k INNER JOIN Video v ON k.VideoID = v.VideoID\n" +
+        "WHERE k.Benutzername = ?\n" +
+        "UNION\n" +
+        "SELECT 'Video' AS Typ, v.VideoID AS ID, v.Titel AS VideoTitel, NULL AS KommentarInhalt, v.Veröffentlichungsdatum\n" +
+        "FROM Video v\n" +
+        "WHERE v.Benutzername = ?\n" +
+        "UNION\n" +
+        "SELECT 'Bewertung' AS Typ, b.VideoID AS ID, v.Titel AS VideoTitel, b.Typ AS BewertungTyp, NULL AS Verfassungsdatum\n" +
+        "FROM Bewertet b INNER JOIN Video v ON b.VideoID = v.VideoID\n" +
+        "WHERE b.Benutzername = ?\n" +
+        "UNION\n" +
+        "SELECT 'Geschaut' AS Typ, g.VideoID AS ID, v.Titel AS VideoTitel, NULL AS KommentarInhalt, g.Datum AS Ansichtsdatum\n" +
+        "FROM Geschaut g\n" +
+        "INNER JOIN Video v ON g.VideoID = v.VideoID\n" +
+        "WHERE g.Benutzername = ?;";
 
-//      Finde alle Videos, die die Werbung des Werbepartners Nvidia geschaltet haben und zur Kategorie Gaming gehören.
-    private static String sqlString3 = "";
+//      Finde alle Videos, die die Werbung des Werbepartners X geschaltet haben und zur Kategorie Y gehören.
+    private static String sqlString3 = "SELECT v.VideoID, v.Titel, v.Kategorie, v.Videolaenge, w.Werbepartner\n" +
+        "FROM Video v\n" +
+        "   INNER JOIN Monetarisiert m ON v.VideoID = m.VideoID\n" +
+        "   INNER JOIN Werbung w ON m.WerbungID = w.WerbungID\n" +
+        "WHERE w.Werbepartner = ? AND v.Kategorie = ?;";
 
 //      Sortiere alle Konten absteigend basierend auf ihrer Abonnenten Anzahl
-    private static String sqlString4 = "";
+    private static String sqlString4 = "SELECT k.Benutzername, COUNT(a.AbonnentID) AS AbonnentenAnzahl\n" +
+        "FROM Konto k LEFT JOIN Abonniert a ON k.Benutzername = a.AbonniertID\n" +
+        "GROUP BY k.Benutzername\n" +
+        "ORDER BY AbonnentenAnzahl DESC;";
 
 //      Finde alle Kommentare die am 4.09.2024 verfasst wurden
-    private static String sqlString5 = "";
+    private static String sqlString5 = "SELECT KommentarID, Inhalt, Verfassungsdatum, Benutzername, VideoID, ElternKommentarID\n" +
+        "FROM Kommentar\n" +
+        "WHERE Verfassungsdatum = STR_TO_DATE(?, '%d.%m.%Y');";
 
 //      Abfrage mit Tiefensuche
 
@@ -104,7 +86,7 @@ public class Controller {
     public static void executeQuery3(String werbepartner, String kategorie) throws Exception {
         try {
             DBZugriff.connect();
-            Ausgabe.print(Objects.requireNonNull(DBZugriffSelect.executeQuery3(sqlString2, werbepartner, kategorie)));
+            Ausgabe.print(Objects.requireNonNull(DBZugriffSelect.executeQuery3(sqlString3, werbepartner, kategorie)));
             DBZugriff.close();
         } catch (NullPointerException ex) {
             String errorMessage = "Die Anfrage hat nichts zurückgeliefert";
@@ -118,7 +100,7 @@ public class Controller {
         try {
 
             DBZugriff.connect();
-            Ausgabe.print(Objects.requireNonNull(DBZugriffSelect.executeQuery4(sqlString2)));
+            Ausgabe.print(Objects.requireNonNull(DBZugriffSelect.executeQuery4(sqlString4)));
             DBZugriff.close();
         } catch (NullPointerException ex) {
             String errorMessage = "Die Anfrage hat nichts zurückgeliefert";
@@ -128,7 +110,7 @@ public class Controller {
         }
     }
 
-    public static void executeQuery5(Date datum) throws Exception {
+    public static void executeQuery5(String datum) throws Exception {
         try {
         DBZugriff.connect();
         Ausgabe.print(Objects.requireNonNull(DBZugriffSelect.executeQuery5(sqlString5, datum)));
@@ -139,10 +121,5 @@ public class Controller {
             Logger.logError(ex);
             throw new NullPointerException(errorMessage);
         }
-    }
-
-    public static boolean executeInsert(String query) throws SQLException {
-        Ausgabe.print(Objects.requireNonNull(DBZugriffInsert.execute(query, "r")));
-        return true;
     }
 }
