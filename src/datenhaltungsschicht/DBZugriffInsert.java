@@ -35,7 +35,7 @@ public class DBZugriffInsert extends DBZugriff {
             return true;
         } catch (Exception ex) {
             String errorMessage = "Es ist ein Fehler beim Ausführen der SQL-Anweisung aufgetreten.";
-            System.out.println(errorMessage);
+            Logger.logCommand(preparedBefehl.toString());
             Logger.logError(ex);
             throw new SQLException(errorMessage, ex);
         }
@@ -60,7 +60,7 @@ public class DBZugriffInsert extends DBZugriff {
             return true;
         } catch (Exception ex) {
             String errorMessage = "Es ist ein Fehler beim Ausführen der SQL-Anweisung aufgetreten.";
-            System.out.println(errorMessage);
+            Logger.logCommand(preparedBefehl.toString());
             Logger.logError(ex);
             throw new SQLException(errorMessage, ex);
         }
