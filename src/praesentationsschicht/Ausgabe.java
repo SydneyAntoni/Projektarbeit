@@ -8,6 +8,12 @@ import java.sql.SQLException;
 
 public class Ausgabe {
 
+    /**
+     * Prints a horizontal line to separate rows in a table output.
+     * The line is constructed using the provided column widths, with a "+" character at the beginning and end of the line.
+     *
+     * @param colWidths an array of integers representing the width of each column in the table
+     */
     public static void printTableLine(int[] colWidths) {
         System.out.print("+");
         for (int width : colWidths) {
@@ -15,6 +21,13 @@ public class Ausgabe {
         }
         System.out.println();
     }
+    /**
+     * Prints the contents of a SQL ResultSet in a formatted table.
+     * The table is constructed with column widths adjusted to fit the longest value in each column, including the column names.
+     * A horizontal line is printed to separate each row in the table.
+     *
+     * @param results the SQL ResultSet to be printed
+     */
     public static void print(ResultSet results) {
         try {
             ResultSetMetaData metaData = results.getMetaData();

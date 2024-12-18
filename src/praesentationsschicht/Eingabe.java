@@ -2,11 +2,17 @@ package praesentationsschicht;
 
 import datenhaltungsschicht.Logger;
 import logikschicht.ControllerInsert;
+import logikschicht.ControllerSearch;
 import logikschicht.ControllerSelect;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Eingabe {
+    /**
+     * Starts the main program loop, allowing the user to select and execute various actions such as SQL queries, inserting tuples into recursive relationships, and performing depth-first searches on comments.
+     * The method prompts the user to enter a number from 1 to 4 to select the desired action, and then executes the corresponding logic. The loop continues until the user chooses to exit the program.
+     * If the user enters an invalid input, the method will catch the exception and prompt the user to try again.
+     */
     public static void start() {
         try {
             Scanner sc = new Scanner(System.in);
@@ -16,7 +22,8 @@ public class Eingabe {
                         Sie können sich durch eine Eingabe einer Zahl von 1-3 zwischen den folgenden Aktionen
                         1. Eine SQL-Abfrage auswählen,
                         2. Ein Tupel in eine Rekursive Beziehung einfügen
-                        3. Das Programm beenden
+                        3. Tiefensuche bei den Kommentaren durchführen
+                        4. Das Programm beenden
                         """);
                 System.out.print("Eingabe:");
                 int eingabeAktion = sc.nextInt();
@@ -24,7 +31,8 @@ public class Eingabe {
                 switch (eingabeAktion) {
                     case 1 -> sqlAnfragen(sc);
                     case 2 -> rekursiveBeziehung(sc);
-                    case 3 -> auswahlAktion = false;
+                    case 3 -> tiefensucheKommentare(sc);
+                    case 4 -> auswahlAktion = false;
                     default ->
                             System.out.println("Ihre Eingabe '" + eingabeAktion +"' ist fehlerhaft bitte wählen Sie eine Ziffer zwischen 1 und 3\n");
                 }
@@ -38,6 +46,16 @@ public class Eingabe {
         }
     }
 
+    /**
+     * Allows the user to select and execute various SQL queries from a menu.
+     * The user is presented with a list of 5 different SQL queries they can choose from.
+     * For each query, the user is prompted to enter any necessary input parameters, such as a username or a date.
+     * The selected query is then executed and the results are displayed.
+     * The method continues to prompt the user for new queries until the user chooses to exit.
+     *
+     * @param sc the Scanner object used for user input
+     * @throws Exception if an error occurs during the query execution
+     */
     public static void sqlAnfragen (Scanner sc) throws Exception{
         boolean weiteren = true;
         while (weiteren) {
@@ -99,6 +117,16 @@ public class Eingabe {
         }
     }
 
+    /**
+     * Allows the user to insert new tuples into the Kommentar and Abonniert tables.
+     * The user is presented with a menu to choose between inserting a new comment or a new subscription.
+     * For inserting a new comment, the user is prompted to enter the message content, the ID of the parent comment (or 0 if it's a top-level comment), the ID of the video being commented on, and the username of the commenter.
+     * For inserting a new subscription, the user is prompted to enter the username of the subscriber and the username of the subscribed user.
+     * The method continues to prompt the user for new tuples until the user chooses to exit.
+     *
+     * @param sc the Scanner object used for user input
+     * @throws Exception if an error occurs during the insert operations
+     */
     public static void rekursiveBeziehung (Scanner sc) throws Exception{
         boolean weiteresTupel = true;
         while (weiteresTupel) {
@@ -174,6 +202,39 @@ public class Eingabe {
                 case 3 -> weiteresTupel = false;
                 default -> System.out.println("Ihre Eingabe '" + eingabeAktionTupel + "' ist fehlerhaft bitte wählen Sie eine Ziffer zwischen 1 und 3");
             }
+        }
+    }
+
+    /**
+     * Performs a depth-first search to display the sub-comments of a given comment.
+     * The user is prompted to enter the ID of the comment they want to see the sub-comments for.
+     * The method then calls the `ControllerSearch.executeSearch()` method to retrieve and display the sub-comments.
+     * The user is then prompted to continue searching for more sub-comments or to exit.
+     *
+     * @param sc the `Scanner` object used for user input
+     * @throws Exception if an error occurs during the search or display of sub-comments
+     */
+    public static void tiefensucheKommentare(Scanner sc) throws Exception{
+        boolean weiteren = true;
+        while (weiteren) {
+            System.out.print("\nWählen Sie die ID des Kommentars für den Sie die Unterkommentare sehen wollen:");
+            int kommentarID = sc.nextInt();
+            ControllerSearch.executeSearch(kommentarID);
+            System.out.println("\nWollen Sie nach weiteren Unterkommentaren suchen? (j/n)");
+            boolean fehlgeschlagen = false;
+            do {
+                String auswahl = sc.next();
+                if (auswahl.equals("n")) {
+                    weiteren = false;
+                    System.out.println("\n");
+                } else if (auswahl.equals("j")) {
+                    System.out.println("\n");
+                } else {
+                    System.out.println("Ihre Eingabe '" + auswahl + "' ist fehlerhaft bitte wählen Sie entweder 'j' oder 'n'");
+                    fehlgeschlagen = true;
+                }
+            }
+            while (fehlgeschlagen);
         }
     }
 }

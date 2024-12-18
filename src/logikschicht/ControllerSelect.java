@@ -1,13 +1,10 @@
 package logikschicht;
 
 import datenhaltungsschicht.DBZugriff;
-import datenhaltungsschicht.DBZugriffInsert;
 import datenhaltungsschicht.DBZugriffSelect;
 import datenhaltungsschicht.Logger;
 import praesentationsschicht.Ausgabe;
 
-import java.sql.Date;
-import java.sql.SQLException;
 import java.util.Objects;
 
 public class ControllerSelect {
@@ -58,6 +55,12 @@ public class ControllerSelect {
 //      Abfrage mit Tiefensuche
 
 
+    /**
+     * Executes a SQL query to retrieve the usernames of accounts that have subscribed to the account with the username "user123".
+     *
+     * @param benutzername the username of the account to retrieve subscribed accounts for
+     * @throws Exception if the query fails to execute or returns no results
+     */
     public static void executeQuery1(String benutzername) throws Exception {
         try {
             DBZugriff.connect();
@@ -71,6 +74,12 @@ public class ControllerSelect {
         }
     }
 
+    /**
+     * Executes a SQL query to retrieve data based on the provided username.
+     *
+     * @param benutzername the username to use in the query
+     * @throws Exception if the query fails to execute or returns no results
+     */
     public static void executeQuery2(String benutzername) throws Exception {
         try {
             DBZugriff.connect();
@@ -83,6 +92,13 @@ public class ControllerSelect {
             throw new NullPointerException(errorMessage);
         }
     }
+    /**
+     * Executes a SQL query to retrieve data based on the provided advertising partner and category.
+     *
+     * @param werbepartner the advertising partner to use in the query
+     * @param kategorie the category to use in the query
+     * @throws Exception if the query fails to execute or returns no results
+     */
     public static void executeQuery3(String werbepartner, String kategorie) throws Exception {
         try {
             DBZugriff.connect();
@@ -96,6 +112,11 @@ public class ControllerSelect {
         }
     }
 
+    /**
+     * Executes a SQL query to retrieve data.
+     *
+     * @throws Exception if the query fails to execute or returns no results
+     */
     public static void executeQuery4() throws Exception {
         try {
 
@@ -110,6 +131,12 @@ public class ControllerSelect {
         }
     }
 
+    /**
+     * Executes a SQL query to retrieve data based on the provided date.
+     *
+     * @param datum the date to use in the query
+     * @throws Exception if the query fails to execute or returns no results
+     */
     public static void executeQuery5(String datum) throws Exception {
         try {
         DBZugriff.connect();
